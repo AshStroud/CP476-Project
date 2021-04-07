@@ -1,14 +1,7 @@
-Header for individual project:
-Project title: ???
-Name: ???
-ID: ???
-Statement: I claim that the enclosed project submission is my individual work.
-
-
 Header for group project:
-Project title: ??? 
-Name: list of names, separated by comma
-ID: list ID in order, separated by comma 
+Project title: Multiplayer Minesweeper
+Name: Shane Haalstra, Ashleigh Stroud
+ID: 160857100, 160162440
 Statement: We claim that the enclosed project submission is our team work.
 
 Evaluation grid: [self-evaluation/total/marker-evaluation]
