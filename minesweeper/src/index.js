@@ -20,4 +20,13 @@ class Game extends React.Component {
   }
 }
 
-ReactDOM.render(<Game />, document.getElementById("root"));
+function startGame(){
+  ReactDOM.render(<Game />, document.getElementById("root"));
+}
+
+ReactDOM.render(<button onClick={startGame}>
+  Start Game
+</button>, document.getElementById("button"));
+
+
+
