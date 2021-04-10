@@ -286,16 +286,16 @@ export default class Board extends React.Component {
         });
 
     }
-    // Component methods
-    componentWillReceiveProps(nextProps) {
-        if (JSON.stringify(this.props) !== JSON.stringify(nextProps)) {
-            this.setState({
-                boardData: this.initBoardData(nextProps.height, nextProps.width, nextProps.mines),
-                gameWon: false,
-                mineCount: nextProps.mines,
-            });
-        }
-    }
+    // // Component methods
+    // componentWillReceiveProps(nextProps) {
+    //     if (JSON.stringify(this.props) !== JSON.stringify(nextProps)) {
+    //         this.setState({
+    //             boardData: this.initBoardData(nextProps.height, nextProps.width, nextProps.mines, nextProps.minesLoc),
+    //             gameWon: false,
+    //             mineCount: nextProps.mines,
+    //         });
+    //     }
+    // }
 
     render() {
         return (

@@ -14,6 +14,8 @@ var clients = [];
 var height = 8;
 var width = 8;
 var mines = 10;
+var gameCreated = false;
+let minesLoc = [];
 
 /**
  * Helper function for escaping input strings
@@ -74,26 +76,31 @@ wsServer.on('request', function (request) {
                 console.log((new Date()) + ' User is known as: ' + userName);
 
             } else if (message.utf8Data === "mines"){
-                let minesLoc = [];
-                let randomx, randomy, minesPlanted = 0;
-                for (let i = 0; i < height; i++) {
-                    minesLoc.push([]);
-                    for (let j = 0; j < width; j++) {
-                        minesLoc[i][j] = {
-                            isMine: false,
-                        };
+                //if (gameCreated === false){
+                    minesLoc = []
+                    let randomx, randomy, minesPlanted = 0;
+                    for (let i = 0; i < height; i++) {
+                        minesLoc.push([]);
+                        for (let j = 0; j < width; j++) {
+                            minesLoc[i][j] = {
+                                isMine: false,
+                            };
+                        }
                     }
-                }
-                while (minesPlanted < mines) {
-                    randomx = Math.floor((Math.random() * 1000) + 1) % width;
-                    randomy = Math.floor((Math.random() * 1000) + 1) % height;
-                    if (!(minesLoc[randomx][randomy].isMine)) {
-                        minesLoc[randomx][randomy].isMine = true;
-                        minesPlanted++;
+                    while (minesPlanted < mines) {
+                        randomx = Math.floor((Math.random() * 1000) + 1) % width;
+                        randomy = Math.floor((Math.random() * 1000) + 1) % height;
+                        if (!(minesLoc[randomx][randomy].isMine)) {
+                            minesLoc[randomx][randomy].isMine = true;
+                            minesPlanted++;
+                        }
                     }
-                }
-                connection.send(JSON.stringify({type: 'mines', data: minesLoc}))
-                
+                    connection.send(JSON.stringify({type: 'mines', data: minesLoc}));
+                    gameCreated = true;
+                // } else {
+                //     connection.send(JSON.stringify({type: 'mines', data: minesLoc}));
+                //     gameCreated = false;
+                // }
                 
             } else { // log and broadcast the message
                 console.log((new Date()) + ' Received Message from '

@@ -11,11 +11,10 @@ class Game extends React.Component {
     height: 8,
     width: 8,
     mines: 10,
-    minesLocation: []
   };
 
   render() {
-    const { height, width, mines, minesLocation } = this.state;
+    const { height, width, mines } = this.state;
     return (
       <div className="game">
         <Board height={height} width={width} mines={mines} minesLocation={this.props.minesLoc} />
@@ -24,11 +23,13 @@ class Game extends React.Component {
   }
 }
 
-function startGame(minesLoc){
-  ReactDOM.render(<Game minesLoc={minesLoc} />, document.getElementById("root"));
+function startGame(minesLocation){
+  ReactDOM.render(<Game minesLoc={minesLocation} />, document.getElementById("root"));
 }
-
-ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
+function clearGame(){
+  ReactDOM.render(<p>cleared</p>, document.getElementById("root"));
+}
+//ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
 
 $ ( function () {
 
@@ -59,17 +60,21 @@ $ ( function () {
 
   var userButton = document.getElementById("userButton");
   userButton.addEventListener("click", userButtonClick);
+  var gameButton = document.getElementById("gameButton");
+  gameButton.addEventListener("click", gameButtonClick);
+  var newGameButton = document.getElementById("newGameButton");
+  newGameButton.addEventListener("click", newGameButtonClick);
 
-  // var gameButton = document.getElementById("gameButton");
-  // gameButton.addEventListener("click", gameButtonClick);
+  function gameButtonClick() {
+    startGame(minesLoc);
+    //connection.send('mines');
+  };
+  function newGameButtonClick() {
+    clearGame();
 
-  // function gameButtonClick() {
-
-  // };
-  // function getMinesLoc(){
-  //     return minesLoc;
-  // }
-
+    //startGame(minesLoc);
+    connection.send('mines');
+  };
   function userButtonClick() {
       var msg = document.getElementById("input").value;
       if (!msg) {
@@ -121,14 +126,8 @@ $ ( function () {
       } else if (json.type === 'mines'){
           minesLoc = json.data;
           //export default minesLoc({minesLoc});
-          console.log(minesLoc);
-          startGame(json.data);
-          //{this.setState({minesLoc: json.data})}
-          //module.exports = json.data;
-          
-          //arr = json.data;
-          //len = arr.length;
-          //console.log("MinesLocLen: " + len.toString());
+          console.log(json.data);
+
       } else {
           console.log('Hmm..., I\'ve never seen JSON like this: ', json);
       }
