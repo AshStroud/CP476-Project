@@ -26,18 +26,10 @@ class Game extends React.Component {
 }
 
 function startGame(minesLoc){
-  //ReactDOM.render(<Game minesLoc={minesLoc} />, document.getElementById("root"));
-  //ReactDOM.render(<Timer/>, document.getElementById("timer"));
-
-  ReactDOM.render(
-    <div>
-       <Game minesLoc={minesLoc} />
-       <Timer/>
-    </div>,
-    document.getElementById('root'));
+  ReactDOM.render(<Game minesLoc={minesLoc} />, document.getElementById("root"));
 }
 
-//ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
+ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
 
 $ ( function () {
 
