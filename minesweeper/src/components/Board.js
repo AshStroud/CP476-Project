@@ -3,7 +3,7 @@ import Cell from './Cell';
 
 export default class Board extends React.Component {
     state = {
-        boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines),
+        boardData: this.initBoardData(this.props.height, this.props.width, this.props.mines, this.props.minesLocation),
         gameWon: false,
         mineCount: this.props.mines,
     };
@@ -62,7 +62,7 @@ export default class Board extends React.Component {
     }
 
     // Gets initial board data
-    initBoardData(height, width, mines) {
+    initBoardData(height, width, mines, minesLoc) {
         let data = [];
 
         for (let i = 0; i < height; i++) {
@@ -71,7 +71,7 @@ export default class Board extends React.Component {
                 data[i][j] = {
                     x: i,
                     y: j,
-                    isMine: false,
+                    isMine: minesLoc[i][j].isMine,
                     neighbour: 0,
                     isRevealed: false,
                     isEmpty: false,
@@ -79,27 +79,27 @@ export default class Board extends React.Component {
                 };
             }
         }
-        data = this.plantMines(data, height, width, mines);
+        //data = this.plantMines(data, height, width, mines);
         data = this.getNeighbours(data, height, width);
         console.log(data);
         return data;
     }
 
-    // plant mines on the board
-    plantMines(data, height, width, mines) {
-        let randomx, randomy, minesPlanted = 0;
+    // // plant mines on the board
+    // plantMines(data, height, width, mines) {
+    //     let randomx, randomy, minesPlanted = 0;
 
-        while (minesPlanted < mines) {
-            randomx = this.getRandomNumber(width);
-            randomy = this.getRandomNumber(height);
-            if (!(data[randomx][randomy].isMine)) {
-                data[randomx][randomy].isMine = true;
-                minesPlanted++;
-            }
-        }
+    //     while (minesPlanted < mines) {
+    //         randomx = this.getRandomNumber(width);
+    //         randomy = this.getRandomNumber(height);
+    //         if (!(data[randomx][randomy].isMine)) {
+    //             data[randomx][randomy].isMine = true;
+    //             minesPlanted++;
+    //         }
+    //     }
 
-        return (data);
-    }
+    //     return (data);
+    // }
 
     // get number of neighbouring mines for each board cell
     getNeighbours(data, height, width) {
