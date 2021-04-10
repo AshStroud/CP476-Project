@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Board from './components/Board';
 import $ from 'jquery';
 import './index.css';
-import Timer from './counter';
+import Timer from './timer';
 
 //const clientSource = require('./Client')
 
