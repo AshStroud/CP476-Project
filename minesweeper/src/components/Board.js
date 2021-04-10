@@ -1,4 +1,5 @@
 import React from 'react';
+import reactDom from 'react-dom';
 import Cell from './Cell';
 
 export default class Board extends React.Component {
@@ -212,7 +213,7 @@ export default class Board extends React.Component {
         // check if mine. game over if true
         if (this.state.boardData[x][y].isMine) {
             this.revealBoard();
-            alert("game over");
+            reactDom.render("You Lose!", document.getElementById("results"));
         }
 
         let updatedData = this.state.boardData;
@@ -226,7 +227,7 @@ export default class Board extends React.Component {
         if (this.getHidden(updatedData).length === this.props.mines) {
             win = true;
             this.revealBoard();
-            alert("You Win");
+            reactDom.render("You Win!", document.getElementById("results"));
         }
 
         this.setState({
@@ -274,13 +275,19 @@ export default class Board extends React.Component {
         return data.map((datarow) => {
             return datarow.map((dataitem) => {
                 return (
-                    <div key={dataitem.x * datarow.length + dataitem.y}>
-                        <Cell
-                            onClick={() => this.handleCellClick(dataitem.x, dataitem.y)}
-                            cMenu={(e) => this._handleContextMenu(e, dataitem.x, dataitem.y)}
-                            value={dataitem}
-                        />
-                        {(datarow[datarow.length - 1] === dataitem) ? <div className="clear" /> : ""}
+                    <div>
+                        <div>
+                            <span id="results"></span>
+                        </div>
+                        <div key={dataitem.x * datarow.length + dataitem.y}>
+                            <Cell
+                                onClick={() => this.handleCellClick(dataitem.x, dataitem.y)}
+                                cMenu={(e) => this._handleContextMenu(e, dataitem.x, dataitem.y)}
+                                value={dataitem}
+                            />
+                            {(datarow[datarow.length - 1] === dataitem) ? <div className="clear" /> : ""}
+                        </div>
+
                     </div>);
             })
         });
@@ -296,6 +303,7 @@ export default class Board extends React.Component {
     //         });
     //     }
     // }
+
 
     render() {
         return (

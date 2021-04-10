@@ -27,7 +27,7 @@ function startGame(minesLocation){
   ReactDOM.render(<Game minesLoc={minesLocation} />, document.getElementById("root"));
 }
 function clearGame(){
-  ReactDOM.render(<p>cleared</p>, document.getElementById("root"));
+  ReactDOM.render(<p> </p>, document.getElementById("root"));
 }
 //ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
 
@@ -37,7 +37,9 @@ $ ( function () {
   var content = $('#content');
   var input = $('#input');
   var status = $('#status');
-
+  var varGameButton = $('#gameButton');
+  var varUserButton = $('#userButton');
+  var varNewGameButton = $('#newGameButton');
   // my name sent to the server
   var myName = false;
   var minesLoc = [];
@@ -68,12 +70,16 @@ $ ( function () {
   function gameButtonClick() {
     startGame(minesLoc);
     //connection.send('mines');
+    varGameButton.attr('disabled', 'disabled');
+    varNewGameButton.removeAttr('disabled');
   };
   function newGameButtonClick() {
     clearGame();
 
     //startGame(minesLoc);
     connection.send('mines');
+    varGameButton.removeAttr('disabled');
+    varNewGameButton.attr('disabled', 'disabled');
   };
   function userButtonClick() {
       var msg = document.getElementById("input").value;
@@ -94,6 +100,8 @@ $ ( function () {
           myName = msg;
       }
      status.text('Button Clicked');
+     varUserButton.attr('disabled', 'disabled');
+     varGameButton.removeAttr('disabled');
   };
 
   connection.onopen = function () {
