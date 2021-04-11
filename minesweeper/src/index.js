@@ -12,11 +12,10 @@ class Game extends React.Component {
     height: 8,
     width: 8,
     mines: 10,
-    minesLocation: []
   };
 
   render() {
-    const { height, width, mines, minesLocation } = this.state;
+    const { height, width, mines } = this.state;
     return (
       <div className="game">
         <Board height={height} width={width} mines={mines} minesLocation={this.props.minesLoc} />
@@ -25,11 +24,13 @@ class Game extends React.Component {
   }
 }
 
-function startGame(minesLoc){
-  ReactDOM.render(<Game minesLoc={minesLoc} />, document.getElementById("root"));
+function startGame(minesLocation){
+  ReactDOM.render(<Game minesLoc={minesLocation} />, document.getElementById("root"));
 }
-
-ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
+function clearGame(){
+  ReactDOM.render(<p> </p>, document.getElementById("root"));
+}
+//ReactDOM.render(<button onClick={startGame}>Start Game</button>, document.getElementById("gameButton"));
 
 $ ( function () {
 
@@ -37,10 +38,15 @@ $ ( function () {
   var content = $('#content');
   var input = $('#input');
   var status = $('#status');
-
+  var varGameButton = $('#gameButton');
+  var varUserButton = $('#userButton');
+  var varNewGameButton = $('#newGameButton');
+  var varGamesPlayed = $('#gamesPlayed');
   // my name sent to the server
   var myName = false;
   var minesLoc = [];
+  var gamesPlayed = 0;
+
 
 
   // if user is running mozilla then use it's built-in WebSocket
@@ -60,36 +66,51 @@ $ ( function () {
 
   var userButton = document.getElementById("userButton");
   userButton.addEventListener("click", userButtonClick);
+  var gameButton = document.getElementById("gameButton");
+  gameButton.addEventListener("click", gameButtonClick);
+  var newGameButton = document.getElementById("newGameButton");
+  newGameButton.addEventListener("click", newGameButtonClick);
 
-  // var gameButton = document.getElementById("gameButton");
-  // gameButton.addEventListener("click", gameButtonClick);
+  function gameButtonClick() {
+    startGame(minesLoc);
+    gamesPlayed += 1;
+    connection.send('newGame')
+    varGamesPlayed.text(gamesPlayed)
+    //connection.send('mines');
+    varGameButton.attr('disabled', 'disabled');
+    varNewGameButton.removeAttr('disabled');
+  };
+  function newGameButtonClick() {
+    clearGame();
 
-  // function gameButtonClick() {
-
-  // };
-  // function getMinesLoc(){
-  //     return minesLoc;
-  // }
-
+    //startGame(minesLoc);
+    connection.send('mines');
+    varGameButton.removeAttr('disabled');
+    varNewGameButton.attr('disabled', 'disabled');
+  };
   function userButtonClick() {
-      var msg = document.getElementById("input").value;
-      if (!msg) {
-          return;
-      }
-      // send the message as an ordinary text
-      connection.send(msg);
-      
-      document.getElementById("input").value = "";
-      
-      // disable the input field to make the user wait until server
-      // sends back response
-      input.attr('disabled', 'disabled');
+    var msg = document.getElementById("input").value;
+    if (!msg) {
+        return;
+    }
+    // send the message as an ordinary text
+    connection.send(msg);
+    
+    document.getElementById("input").value = "";
+    
+    // disable the input field to make the user wait until server
+    // sends back response
+    input.attr('disabled', 'disabled');
 
-      // we know that the first message sent from a user their name
-      if (myName === false) {
-          myName = msg;
-      }
-     status.text('Button Clicked');
+    // we know that the first message sent from a user their name
+    if (myName === false) {
+        myName = msg;
+    }
+
+    //varGamesPlayed.text(gamesPlayed)
+    status.text('Button Clicked');
+    varUserButton.attr('disabled', 'disabled');
+    varGameButton.removeAttr('disabled');
   };
 
   connection.onopen = function () {
@@ -116,20 +137,17 @@ $ ( function () {
 
       if (json.type === 'name') {
           status.text(json.data);
+          gamesPlayed = json.gPlayed;
+          varGamesPlayed.text(gamesPlayed)
           console.log(json.data);
+          console.log(gamesPlayed)
           connection.send('mines');
 
       } else if (json.type === 'mines'){
           minesLoc = json.data;
           //export default minesLoc({minesLoc});
-          console.log(minesLoc);
-          startGame(json.data);
-          //{this.setState({minesLoc: json.data})}
-          //module.exports = json.data;
-          
-          //arr = json.data;
-          //len = arr.length;
-          //console.log("MinesLocLen: " + len.toString());
+          console.log(json.data);
+
       } else {
           console.log('Hmm..., I\'ve never seen JSON like this: ', json);
       }
