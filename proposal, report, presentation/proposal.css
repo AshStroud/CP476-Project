@@ -1,0 +1,22 @@
+h1 {
+counter-reset: section;
+}
+
+h2 {
+counter-reset: subsection; 
+counter-increment: section;
+}
+
+h2:before {
+content: counter(section) " ";
+counter-reset: subsection;
+}
+
+h3:before {
+content: counter(section) "." counter(subsection) " ";
+counter-increment: subsection;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
