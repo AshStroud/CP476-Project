@@ -87,25 +87,22 @@ wsServer.on('request', function (request) {
                     var dbResults = "";
                     dbo.collection("highscores").find(query).toArray(function(err, result) {
                         if (err) throw err;
-                            console.log(result);
                             //dbResults = result;
                             if (result.length === 0) {
-                                console.log("Got here");
                                 var myobj = {user: userName, timesPlayed: 0};
                                 dbo.collection("highscores").insertOne(myobj, function(err, res){
                                     if (err) throw err;
-                                    console.log("New User Created");
-                                    //db.close();
+                                    console.log((new Date()) + " New User Created");
+                                    db.close();
+                                    connection.sendUTF(JSON.stringify({ type: 'name', data: userName, gPlayed: 0}));
                                 });
                             } else {
-                                console.log(result[0]);
-                                console.log(result[0].timesPlayed);
+                                console.log((new Date()) +  + " Query Results " + result[0]);
                                 gamesPlayed = result[0].timesPlayed;
-                                console.log(gamesPlayed)
                                 connection.sendUTF(JSON.stringify({ type: 'name', data: userName, gPlayed: result[0].timesPlayed}));
                                 console.log((new Date()) + ' User is known as: ' + userName);
+                                db.close();
                             }
-                            db.close();
                     
                     });
                 });
@@ -143,7 +140,7 @@ wsServer.on('request', function (request) {
                         { user: userName},
                         { $inc: {timesPlayed: 1}}
                     )
-                    console.log("Games played updated in database.")
+                    console.log((new Date()) + " Games played updated in database.")
                     
                     // insertOne(myobj, function(err, res){
                     //     if (err) throw err;
@@ -162,11 +159,11 @@ wsServer.on('request', function (request) {
     // user disconnected
     connection.on('close', function (connection) {
         if (userName !== false) {
-            console.log((new Date()) + " Peer "
-                + connection.remoteAddress + " disconnected.");
+            console.log((new Date()) + " Peer disconnected.");
             // remove user from the list of connected clients
             clients.splice(index, 1);
         }
+        userName = false;
     });
 
 
