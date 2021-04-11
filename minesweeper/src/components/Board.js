@@ -260,7 +260,6 @@ export default class Board extends React.Component {
             win = (JSON.stringify(mineArray) === JSON.stringify(FlagArray));
             if (win) {
                 this.revealBoard();
-                alert("You Win");
             }
         }
 
@@ -310,7 +309,6 @@ export default class Board extends React.Component {
             <div className="board">
                 <div className="game-info">
                     <span className="info">mines: {this.state.mineCount}</span><br />
-                    <span className="info">{this.state.gameWon ? "You Win" : ""}</span>
                 </div>
                 {
                     this.renderBoard(this.state.boardData)
