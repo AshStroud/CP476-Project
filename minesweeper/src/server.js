@@ -2,6 +2,10 @@ process.title = 'Minesweeper';
 
 // Port where we'll run the websocket server
 var webSocketsServerPort = 1337;
+var mongo = require('mongodb');
+
+var MongoClient = require('mongodb').MongoClient;
+var mongo_url = "mongodb://localhost:27017";
 
 // websocket and http servers
 var webSocketServer = require('websocket').server;
@@ -15,7 +19,6 @@ var height = 8;
 var width = 8;
 var mines = 10;
 var gameCreated = false;
-let minesLoc = [];
 
 /**
  * Helper function for escaping input strings
@@ -48,7 +51,7 @@ server.listen(webSocketsServerPort, function () {
  */
  var wsServer = new webSocketServer({
     // WebSocket server is tied to a HTTP server. WebSocket request is just
-    // an enhanced HTTP request. For more info http://tools.ietf.org/html/rfc6455#page-6
+    // an enhanced HTTP request.
     httpServer: server
 });
 
@@ -58,11 +61,12 @@ wsServer.on('request', function (request) {
 
     // accept connection - you should check 'request.origin' to make sure that
     // client is connecting from your website
-    // (http://en.wikipedia.org/wiki/Same_origin_policy)
     var connection = request.accept(null, request.origin);
     // we need to know client index to remove them on 'close' event
     var index = clients.push(connection) - 1;
     var userName = false;
+    var gamesPlayed = 0;
+    var minesLoc = [];
 
     console.log((new Date()) + ' Connection accepted.');
 
@@ -72,11 +76,42 @@ wsServer.on('request', function (request) {
             if (userName === false) {
                 // remember user name
                 userName = htmlEntities(message.utf8Data);
-                connection.sendUTF(JSON.stringify({ type: 'name', data: userName }));
-                console.log((new Date()) + ' User is known as: ' + userName);
+
+                /*
+                MONGO DB CODE TO GET USERNAMES
+                */ 
+                MongoClient.connect(mongo_url, function(err, db){
+                    if (err) throw err;
+                    var dbo = db.db("cp476-project");
+                    var query = { user: userName};
+                    var dbResults = "";
+                    dbo.collection("highscores").find(query).toArray(function(err, result) {
+                        if (err) throw err;
+                            console.log(result);
+                            //dbResults = result;
+                            if (result.length === 0) {
+                                console.log("Got here");
+                                var myobj = {user: userName, timesPlayed: 0};
+                                dbo.collection("highscores").insertOne(myobj, function(err, res){
+                                    if (err) throw err;
+                                    console.log("New User Created");
+                                    //db.close();
+                                });
+                            } else {
+                                console.log(result[0]);
+                                console.log(result[0].timesPlayed);
+                                gamesPlayed = result[0].timesPlayed;
+                                console.log(gamesPlayed)
+                                connection.sendUTF(JSON.stringify({ type: 'name', data: userName, gPlayed: result[0].timesPlayed}));
+                                console.log((new Date()) + ' User is known as: ' + userName);
+                            }
+                            db.close();
+                    
+                    });
+                });
+                
 
             } else if (message.utf8Data === "mines"){
-                //if (gameCreated === false){
                     minesLoc = []
                     let randomx, randomy, minesPlanted = 0;
                     for (let i = 0; i < height; i++) {
@@ -97,12 +132,27 @@ wsServer.on('request', function (request) {
                     }
                     connection.send(JSON.stringify({type: 'mines', data: minesLoc}));
                     gameCreated = true;
-                // } else {
-                //     connection.send(JSON.stringify({type: 'mines', data: minesLoc}));
-                //     gameCreated = false;
-                // }
                 
-            } else { // log and broadcast the message
+            } else if (message.utf8Data === "newGame"){
+                gamesPlayed = gamesPlayed + 1
+                MongoClient.connect(mongo_url, function(err, db){
+                    if (err) throw err;
+                    var dbo = db.db("cp476-project");
+                    //var myobj = {user: userName, timesPlayed: gamesPlayed}
+                    dbo.collection("highscores").update(
+                        { user: userName},
+                        { $inc: {timesPlayed: 1}}
+                    )
+                    console.log("Games played updated in database.")
+                    
+                    // insertOne(myobj, function(err, res){
+                    //     if (err) throw err;
+                    //     console.log("1 gameplayed inserted");
+                    db.close();
+                    //});
+                 });
+            
+            } else {
                 console.log((new Date()) + ' Received Message from '
                     + userName + ': ' + message.utf8Data);
             }

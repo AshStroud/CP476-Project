@@ -40,9 +40,12 @@ $ ( function () {
   var varGameButton = $('#gameButton');
   var varUserButton = $('#userButton');
   var varNewGameButton = $('#newGameButton');
+  var varGamesPlayed = $('#gamesPlayed');
   // my name sent to the server
   var myName = false;
   var minesLoc = [];
+  var gamesPlayed = 0;
+
 
 
   // if user is running mozilla then use it's built-in WebSocket
@@ -69,6 +72,9 @@ $ ( function () {
 
   function gameButtonClick() {
     startGame(minesLoc);
+    gamesPlayed += 1;
+    connection.send('newGame')
+    varGamesPlayed.text(gamesPlayed)
     //connection.send('mines');
     varGameButton.attr('disabled', 'disabled');
     varNewGameButton.removeAttr('disabled');
@@ -82,26 +88,28 @@ $ ( function () {
     varNewGameButton.attr('disabled', 'disabled');
   };
   function userButtonClick() {
-      var msg = document.getElementById("input").value;
-      if (!msg) {
-          return;
-      }
-      // send the message as an ordinary text
-      connection.send(msg);
-      
-      document.getElementById("input").value = "";
-      
-      // disable the input field to make the user wait until server
-      // sends back response
-      input.attr('disabled', 'disabled');
+    var msg = document.getElementById("input").value;
+    if (!msg) {
+        return;
+    }
+    // send the message as an ordinary text
+    connection.send(msg);
+    
+    document.getElementById("input").value = "";
+    
+    // disable the input field to make the user wait until server
+    // sends back response
+    input.attr('disabled', 'disabled');
 
-      // we know that the first message sent from a user their name
-      if (myName === false) {
-          myName = msg;
-      }
-     status.text('Button Clicked');
-     varUserButton.attr('disabled', 'disabled');
-     varGameButton.removeAttr('disabled');
+    // we know that the first message sent from a user their name
+    if (myName === false) {
+        myName = msg;
+    }
+
+    //varGamesPlayed.text(gamesPlayed)
+    status.text('Button Clicked');
+    varUserButton.attr('disabled', 'disabled');
+    varGameButton.removeAttr('disabled');
   };
 
   connection.onopen = function () {
@@ -128,7 +136,10 @@ $ ( function () {
 
       if (json.type === 'name') {
           status.text(json.data);
+          gamesPlayed = json.gPlayed;
+          varGamesPlayed.text(gamesPlayed)
           console.log(json.data);
+          console.log(gamesPlayed)
           connection.send('mines');
 
       } else if (json.type === 'mines'){
