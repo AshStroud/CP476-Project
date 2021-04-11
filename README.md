@@ -1,4 +1,4 @@
-# WebSocket Minesweeper in NodeJS with React and Mongodb
+# WebSocket Minesweeper in NodeJS with React and MongoDB
 
 ## How to run
 
@@ -14,5 +14,6 @@
 ## References
 1. Course material
 2. https://www.iamtimsmith.com/blog/this-state-how-to-use-state-in-react
-3. 
+3. https://reactjs.org/docs/handling-events.html
+
 
